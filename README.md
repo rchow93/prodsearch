@@ -47,6 +47,9 @@ The application can be configured to use either:
 
 To use Ollama (local LLM):
 - Ensure Ollama is installed and running
+- update the mode as needed
+- update the temperature as needed
+- update the num_ctx as needed (tokens)
 - Update the base_url in prodreview.py if needed:
 ```python
 llm = ChatOllama(

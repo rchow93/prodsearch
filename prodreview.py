@@ -3,7 +3,6 @@ import dotenv
 from crewai import Agent, Task, Crew, Process, LLM
 from crewai_tools import FileWriterTool, FileReadTool, ScrapeWebsiteTool, SerperDevTool
 from langchain_community.tools import DuckDuckGoSearchRun
-from langchain_ollama import ChatOllama
 from crewai.tools import tool  # Only importing 'tool' since BaseTool isn't used
 import contextlib  # Optional - used only for error suppression in search_tool
 from datetime import datetime
@@ -25,7 +24,7 @@ websearch = SerperDevTool()  #use this tool if you have a serperdev api key, oth
 scrape_tool = ScrapeWebsiteTool() #allow agents to scrape a website for information
 
 # Initialize LLM - local llm model using ollama
-llm = ChatOllama(
+llm = LLM(
     base_url=f"{ollama_base}",
     model="ollama run deepseek-r1:32b",
     temperature=0,
@@ -47,7 +46,6 @@ llm = LLM(
     max_tokens=4000,  # Limit response length
 )
 '''
-llm2 = LLM(model="openai/gpt-4") #openai llm model - this would be needed if you wanted to use the openai llm model.
 
 @tool("DuckDuckGoSearch")
 def search_tool(search_query: str):
@@ -67,6 +65,7 @@ def create_crew(subject, zipcode):
         verbose=True,
         allow_delegation=True,
         max_iter=50,
+        llm=llm,
         tools=[search_tool, scrape_tool],
     )
 
@@ -82,6 +81,7 @@ def create_crew(subject, zipcode):
         verbose=True,
         allow_delegation=True,
         max_iter=50,
+        llm=llm,
         tools=[file_read_tool, file_writer_tool]
     )
 
@@ -91,6 +91,7 @@ def create_crew(subject, zipcode):
              Best effort to try compile a comprehensive list of at least 10 products researched and written about to give consumers more choice.""",
         backstory="You're an experienced project manager, skilled in overseeing complex projects and guiding teams to success. Your role is to coordinate the efforts of the crew members, ensuring that each task is completed on time and to the highest standard.",
         allow_delegation=True,
+        llm=llm,
     )
 
     task1 = Task(
@@ -133,6 +134,7 @@ def create_crew(subject, zipcode):
         agents=[researcher, writer],
         tasks=[task1, task2],
         manager_agent=manager,
+        manager_llm=llm,
         process=Process.hierarchical,
         verbose=True,
     )

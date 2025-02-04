@@ -25,10 +25,9 @@ scrape_tool = ScrapeWebsiteTool() #allow agents to scrape a website for informat
 
 # Initialize LLM - local llm model using ollama
 llm = LLM(
+    model="ollama/deepseek-r1:1.5b",
     base_url=f"{ollama_base}",
-    model="ollama run deepseek-r1:32b",
-    temperature=0,
-    num_ctx=16096,
+    #provider="ollama"  # Specify the provider
 )
 
 '''
